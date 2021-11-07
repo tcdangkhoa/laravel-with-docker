@@ -1,6 +1,9 @@
-environment:
-    build: .
-    dockerfile: ./docker/Dockerfile
+version: "3.3"
+services:
+  environment:
+    build:
+      context : .
+      dockerfile: ./docker/Dockerfile
     container_name: laravelWithDocker
     working_dir: /var/www/html
     ports: 
@@ -12,8 +15,11 @@ environment:
       - ./docker/config/app.conf:/etc/nginx/conf.d/app.conf
     links: 
       - mysql
+    depends_on:
+      - mysql
+      - environment-migration
 
-mysql: 
+  mysql: 
     image: mysql:5.6
     container_name: mysql
     ports:
@@ -22,3 +28,20 @@ mysql:
       - ./docker/mysql:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: mysqlpass
+      MYSQL_DATABASE: my_db
+      MYSQL_USER: testUser
+      MYSQL_PASSWORD: 123abc
+
+  environment-migration:
+    build:
+      context : .
+      dockerfile: ./docker/Dockerfile
+    container_name: laravelWithDocker-Migration
+    working_dir: /var/www/html
+    volumes : 
+      - .:/var/www/html
+    links: 
+      - mysql
+    depends_on:
+      - mysql
+    command: [ "sh", "-c", "/var/www/html/start.sh" ]
