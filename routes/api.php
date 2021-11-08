@@ -13,6 +13,16 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::post('signup' , 'Auth\LoginController@register');
+Route::post('login' , 'Auth\LoginController@login');
+
+Route::group(['middleware' => ['jwt']] , function () {
+    //Route::get('getCurrentUser' , 'Auth\LoginController@user');
+    Route::post('wagers' , 'WagerController@store');
+    Route::post('buy/{wagerId}' , 'WagerController@buyAWager');
+    Route::get('wagers' , 'WagerController@index');
 });
