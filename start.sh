@@ -15,4 +15,4 @@ composer install --no-interaction
 
 #Running Migration
 
-#php artisan migrate
+php artisan migrate
